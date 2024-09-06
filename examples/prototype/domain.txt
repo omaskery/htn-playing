@@ -1,0 +1,40 @@
+
+op Walk(?Who, ?Where) {
+    sets Location(?Who) to ?Where;
+}
+
+op CampOp() {}
+
+op AdvanceTime(?Amount) {
+    sets Time to state[Time] + ?Amount;
+    sets TimeOfDay to (state[TimeOfDay] + ?Amount) % 24;
+}
+
+method TravelTo(?Who, ?Where) {
+    requires TravelTimeInHours(Location(?Who), ?Where) < 3
+        and IsBrightAt(state[TimeOfDay]);
+
+    becomes Walk(?Who, ?Where),
+        AdvanceTime(TravelTimeInHours(Location(?Who), ?Where));
+}
+
+method TravelTo(?Who, ?Where) {
+    requires IsBrightAt(state[TimeOfDay]);
+
+    becomes TravelTo(?Who, NextCampFrom(Location(?Who), ?Where, 3)),
+        Camp(?Who, 8),
+        TravelTo(?Who, ?Where);
+}
+
+method TravelTo(?Who, ?Where) {
+    requires CanCamp(Location(?Who)) and
+        IsBrightAt(state[TimeOfDay]) is false;
+
+    becomes Camp(?Who, 2), TravelTo(?Who, ?Where);
+}
+
+method Camp(?Who, ?Duration) {
+    requires CanCamp(Location(?Who));
+
+    becomes CampOp(), AdvanceTime(?Duration);
+}

@@ -1,0 +1,11 @@
+
+state {
+    Location is Downtown,
+    Weather is Bad,
+    Cash is 12,
+    TaxiFare is 2,
+    DistanceFrom(Downtown,Park) is 2000,
+    TaxiLocation(Taxi1) is TaxiBase,
+}
+
+goals TravelTo(Park);

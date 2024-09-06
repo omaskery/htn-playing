@@ -1,0 +1,38 @@
+
+op Walk(?To) {
+    sets Location to ?To;
+}
+
+op Ride(?To) {
+    sets Location to ?To;
+}
+
+op HailTaxi(?Location) {
+    sets TaxiLocation(Taxi1) to ?Location;
+}
+
+op SetCash(?Amount) {
+    sets Cash to ?Amount;
+}
+
+method TravelTo(?X) {
+    requires state[Weather] is Good and
+        DistanceFrom(state[Location], ?X) < 3000;
+
+    becomes Walk(?X);
+}
+
+method TravelTo(?X) {
+    requires state[Cash] >= state[TaxiFare] and
+        TaxiLocation(Taxi1) is TaxiBase;
+
+    becomes HailTaxi(state[Location]),
+        Ride(?X),
+        PayDriver(state[TaxiFare]);
+}
+
+method PayDriver(?Amount) {
+    requires state[Cash] >= ?Amount;
+
+    becomes SetCash(state[Cash] - ?Amount);
+}
